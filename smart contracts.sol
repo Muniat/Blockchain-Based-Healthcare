@@ -8,12 +8,12 @@ contract eHealth{
 	address lab_address = 0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB;
     
 	string patient_name;
-    string patient_id;
+                   string patient_id;
 	string patient_sex;
-    uint patient_age;
-    string doctor_name;
+                   uint patient_age;
+                   string doctor_name;
 	string appointment_time;
-    string medical_department;
+                  string medical_department;
 	uint appointment_date;
 	string prescription;
 	uint roomNo;
@@ -21,6 +21,24 @@ contract eHealth{
 	uint consultationFee;
 	uint admissionFee;
 	uint treatmentFee;
+
+                   mapping (address => Result) results;
+    
+    
+                  struct Result{
+       
+                  string patientName;
+        
+                  string patientId;
+        
+                 string officerId;
+        
+                 string testResults;
+        
+                 uint resultDate;
+   
+                 }
+  
 	 
 	   
 		
@@ -56,37 +74,84 @@ contract eHealth{
 	//scheduling appointments
 	
 	function addAppointment(string memory pat_name,
-							string memory pat_id,
-							string memory doc_name,
-							string memory med_dept,
-							string memory apt_time,
-							uint apt_date) public OnlyReceptionist{
+			          string memory pat_id,
+			          string memory doc_name,
+			          string memory med_dept,
+			          string memory apt_time,
+			          uint apt_date) public OnlyReceptionist{
 								
-								patient_name = pat_name;
-								patient_id = pat_id;
-								doctor_name = doc_name;
-								medical_department = med_dept;
-								appointment_time = apt_time;
-								appointment_date = apt_date;
-								emit ScheduleAppointment(patient_address, doctor_address, "Appointment created");
+				patient_name = pat_name;
+				patient_id = pat_id;
+				doctor_name = doc_name;
+				medical_department = med_dept;
+				appointment_time = apt_time;
+				appointment_date = apt_date;
+				emit ScheduleAppointment(patient_address, doctor_address, "Appointment created");
 													
 							}
                              
    
 	//consultation
 	
-    function addPrescription(string memory pat_name,
-							string memory pat_id,
-							string memory doc_name,
-							string memory apt_time,
-							uint apt_date,
-							string memory pat_prescription ) public OnlyDoctor{
+               function addPrescription(string memory pat_name,
+		                       string memory pat_id,
+		                       string memory doc_name,
+		                       string memory apt_time,
+		                       uint apt_date,
+		                       string memory pat_prescription ) public OnlyDoctor{
 							
-								patient_name = pat_name;
-								patient_id = pat_id;
-								doctor_name = doc_name;
-								appointment_time = apt_time;
-								appointment_date = apt_date;
-								prescription = pat_prescription;
-								emit Consultation(patient_address, "Prescription added");                         
+				patient_name = pat_name;
+				patient_id = pat_id;
+				doctor_name = doc_name;
+				appointment_time = apt_time;
+				appointment_date = apt_date;
+				prescription = pat_prescription;
+				emit Consultation(patient_address, "Prescription added");                         
 							}
+
+                   //sharing lab test_results
+    
+                   function addLabResults( address _address,
+ 
+                                                                 string memory _patientName, 
+                                                                 string memory _patientId,
+ 
+                                                                 string memory _officerId,
+ 
+                                                                 string memory _testResults,
+  
+                                                                 uint _resultDate
+ ) public OnlyLab{
+                                
+                             
+                                                          
+                                                                        results[_address].patientName = _patientName;
+                              
+                                                                        results[_address].patientId = _patientId;
+                              
+                                                                        results[_address].officerId = _officerId;
+                              
+                                                                        results[_address].testResults = _testResults;
+                              
+                                                                        results[_address].resultDate = _resultDate;
+                              
+                              
+
+                                                                        emit LabResult(patient_address, "Results added");
+                                
+                           
+                                                 }
+
+    
+                      //patient allowing the result to be displayed to the doctor                        
+    
+                      function displayResult(address _address) public view returns (string memory, string memory, string memory, string memory, uint){
+        
+        
+
+                              require(msg.sender == patient_address);
+        
+                              return (results[_address].patientName,results[_address].patientId,results[_address].officerId,results[_address].testResults,results[_address].resultDate);
+        
+
+                                       }
