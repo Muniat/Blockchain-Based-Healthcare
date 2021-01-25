@@ -7,6 +7,7 @@ contract eHealth{
 	address receptionist_address = 0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db;
 	address lab_address = 0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB;
     
+                   //required attributes
 	string patient_name;
                    string patient_id;
 	string patient_sex;
@@ -16,24 +17,20 @@ contract eHealth{
                   string medical_department;
 	uint appointment_date;
 	string prescription;
-	uint roomNo;
-	uint admissionDate;
-	uint consultationFee;
-	uint admissionFee;
-	uint treatmentFee;
-
+	
+                   //to access by specific patients
                    mapping (address => Result) results;
     
     
-                  struct Result{
+                   struct Result{
        
-                  string patientName;
+                   string patientName;
         
-                  string patientId;
+                   string patientId;
         
-                 string officerId;
+                   string officerId;
         
-                 string testResults;
+                   string testResults;
         
                  uint resultDate;
    
@@ -42,14 +39,14 @@ contract eHealth{
 	 
 	   
 		
-	//events
+	//events to be stored in blockchain
 	
 	event ScheduleAppointment(address adrs, string msg);
 	event Consultation(address adrs, string msg);
 	event LabResult(address adrs, string msg);
 	   
    
-    //modifiers for access control
+                //modifiers for controlling access between the entities
     
 	modifier OnlyReceptionist{
 		require(msg.sender == receptionist_address);
@@ -109,8 +106,7 @@ contract eHealth{
 				emit Consultation(patient_address, "Prescription added");                         
 							}
 
-                   //sharing lab test_results
-    
+                   //lab notifying the patient their respective test results    
                    function addLabResults( address _address,
  
                                                                  string memory _patientName, 
@@ -143,6 +139,7 @@ contract eHealth{
                                                  }
 
     
+
                       //patient allowing the result to be displayed to the doctor                        
     
                       function displayResult(address _address) public view returns (string memory, string memory, string memory, string memory, uint){
